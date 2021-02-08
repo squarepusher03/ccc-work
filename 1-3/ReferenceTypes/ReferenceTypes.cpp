@@ -10,14 +10,14 @@ void print_name(College* colleges, size_t n_colleges) {
    }
 }
 
-void read_from(const char* str, const size_t size, const size_t index) {
-    if ((index < size) && (index >= 0)) {
+void read_from(const char* str, const size_t size, const int index) {
+    if (((size_t)index < size) && (index >= 0)) {
         printf("%s\n", &str[index]);
     }
 }
 
-void write_to(char* str, const char new_char, const size_t size, const size_t index) {
-    if ((index < size) && (index >= 0)) {
+void write_to(char* str, const char new_char, const size_t size, const int index) {
+    if (((size_t)index < size) && (index >= 0)) {
         str[index] = { new_char };
     }
 }
