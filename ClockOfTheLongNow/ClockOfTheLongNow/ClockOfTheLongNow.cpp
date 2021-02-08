@@ -55,7 +55,5 @@ int main()
     raz.announce();
     jad.announce();
     
-    delete raz;
-    delete jad;
     return 0;
 }
