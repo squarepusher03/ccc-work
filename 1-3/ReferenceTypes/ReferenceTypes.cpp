@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <iostream>
 
 struct College {
    char name[256];
@@ -75,13 +76,16 @@ int main()
     // param: obj type ptr and length, args: array with obj type and length
     print_name(best_colleges, sizeof(best_colleges) / sizeof(College));
 
-    int original{ 100 };
-    int& original_ref{ original };
-    printf("Original: %d\nReference: %d\n", original, original_ref);
+    auto original{ 'c' };
+    auto& original_ref{ original };
+    std::cout << "Original: " << original;
+    std::cout << "\nReference: " << original_ref << '\n';
 
-    int new_value{ 200 };
+    auto new_value{ 'r' };
     original_ref = { new_value }; // assigns new value to what original_ref references (a.k.a. original)
-    printf("Original: %d\nNew Value: %d\nReference: %d", original, new_value, original_ref);
+    std::cout << "Original: " << original;
+    std::cout << "\nNew Value: " << new_value;
+    std::cout << "\nReference: " << original_ref << '\n';
 
     return 0;
 }
