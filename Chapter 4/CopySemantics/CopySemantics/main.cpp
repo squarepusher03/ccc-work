@@ -19,6 +19,18 @@ void print_point(Point p) {
     printf("(%d, %d)\n", p.x, p.y);
 }
 
+struct Replicant 
+{
+    Replicant(const Replicant&) = default;
+    Replicant& operator=(const Replicant&) = default;
+};
+
+struct Highlander // is this a singleton???
+{
+    Highlander(const Highlander&) = delete;
+    Highlander& operator=(const Highlander&) = delete;
+};
+
 int main() {
     Point p;
     p.x = 1;

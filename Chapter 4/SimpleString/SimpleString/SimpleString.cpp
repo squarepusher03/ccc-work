@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstring>
 #include <stdexcept>
+#include <utility>
 
 class SimpleString {
     size_t max_size;
@@ -10,10 +11,17 @@ class SimpleString {
     char* buffer;
 
 public:
-    SimpleString(const SimpleString& other) : max_size{ other.max_size }, buffer{ new char[other.max_size] }, length{ other.length } { // Creates copy of passed SimpleString instance
+    SimpleString(const SimpleString& other) : max_size{ other.max_size }, buffer{ new char[other.max_size] }, length{ other.length } { // copy construction
         std::strncpy(buffer, other.buffer, max_size);
     };
     
+    // move construction
+    SimpleString(SimpleString&& other) noexcept : max_size{ other.max_size }, buffer{ other.buffer }, length{ other.length } {
+        other.length = 0;
+        other.buffer = nullptr;
+        other.max_size = 0;
+    }
+
     SimpleString& operator=(const SimpleString& other) { // copy assignment
         if (this == &other) return *this; // if this is passed, just return itself
         delete[] buffer; // deletes the old buffer pointer to prevent double frees.
@@ -22,6 +30,18 @@ public:
         length = other.length;
         max_size = other.max_size;
         std::strncpy(buffer, other.buffer, max_size);
+        return *this;
+    }
+
+    SimpleString& operator=(SimpleString& other) noexcept { // move assignment
+        if (this == &other) return *this;
+        delete[] buffer;
+        buffer = other.buffer;
+        length = other.length;
+        max_size = other.max_size;
+        other.buffer = nullptr;
+        other.length = 0;
+        other.max_size = 0;
         return *this;
     }
 
@@ -63,6 +83,14 @@ public:
         string.print("Constructed");
     }
 
+    // Copy constructor.
+    SimpleStringOwner(const SimpleString& a) : string{ a } {
+        string.print("Constructed");
+    }
+    
+    // Move constructor.
+    SimpleStringOwner(SimpleString&& x) : string{ std::move(x) } {}
+
     ~SimpleStringOwner() noexcept {
         string.print("About to destroy");
     }
@@ -77,48 +105,76 @@ void fn_b() {
     fn_c();
 }
 
+void own_a_string() {
+    SimpleString a{ 50 };
+    a.append_line("We apologize for the");
+    a.append_line("inconvencience.");
+    SimpleStringOwner b{ a };
+}
+
 int main() {
-    //SimpleString string{ 115 };
-    //string.append_line("Remember remember, ");
-    //string.append_line("The fifth of November,");
-    //string.print("V");
-    //string.append_line("Of gunpowder, treason, and plot, ");
-    //string.append_line("I know of no reason, ");
-    //string.print("A");
-    //if (!string.append_line("the Gunpowder Treason ")) {
-    //    printf("String was not big enough to append.");
+    /*
+    SimpleString string{ 115 };
+    string.append_line("Remember remember, ");
+    string.append_line("The fifth of November,");
+    string.print("V");
+    string.append_line("Of gunpowder, treason, and plot, ");
+    string.append_line("I know of no reason, ");
+    string.print("A");
+    if (!string.append_line("the Gunpowder Treason ")) {
+        printf("String was not big enough to append.");
+    }
+    string.append_line("should ever be forgot.");*/
+
+    /*
+    SimpleStringOwner x{ "x" };
+    printf("x is alive\n");*/
+
+    /*
+    SimpleStringOwner a{ "a" };
+    fn_b();
+    SimpleStringOwner d{ "d" };*/
+
+    //try {
+    //    SimpleString a{ 20 };
+    //    a.append_line("Hello");
+    //    a.print("A");
+    //    SimpleString a_copy{ a };
+    //    a_copy.print("B");
+    //    a.append_line("World");
+    //    a_copy.append_line("People");
+    //    a.print("C");
+    //    a_copy.print("D");
     //}
-    //string.append_line("should ever be forgot.");
+    //catch (const std::exception& e) {
+    //    printf("Exception: %s", e.what());
+    //}
 
-    //SimpleStringOwner x{ "x" };
-    //printf("x is alive\n");
+    /*
+    SimpleString a{ 50 };
+    a.append_line("We apologize for the");
+    SimpleString b{ 50 };
+    b.append_line("Last message");
+    a.print("a");
+    b.print("b");
+    b = a;
+    a.print("a");
+    b.print("b");*/
 
-    //SimpleStringOwner a{ "a" };
-    //    fn_b();
-    //    SimpleStringOwner d{ "d" };
+    //try {
+    //    own_a_string();
+    //}
+    //catch (const std::exception& e) {
+    //    printf("Exception: %s", e.what());
+    //}
 
-    //SimpleString a{ 20 };
-    //a.append_line("Hello");
-    //a.print("A");
-    //SimpleString a_copy{ a };
-    //a_copy.print("B");
-    //a.append_line("World");
-    //a_copy.append_line("People");
-    //a.print("C");
-    //a_copy.print("D");
-
-    try {
-        SimpleString a{ 50 };
-        a.append_line("We apologize for the");
-        SimpleString b{ 50 };
-        b.append_line("Last message");
-        a.print("a");
-        b.print("b");
-        b = a;
-        a.print("a");
-        b.print("b");
-    }
-    catch (const std::exception& e) {
-        printf("Exception: %s", e.what());
-    }
+    SimpleString a{ 50 };
+    a.append_line("we apologize for the");
+    SimpleString b{ 50 };
+    b.append_line("Last message");
+    a.print("a");
+    b.print("b");
+    b = std::move(a);
+    // a is "moved-from"
+    b.print("b");
 }
