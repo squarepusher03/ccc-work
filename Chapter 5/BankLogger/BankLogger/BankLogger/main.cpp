@@ -22,6 +22,8 @@ class Bank {
     Logger *logger;
 
 public:
+    Bank(Logger* logger) : logger{ logger } {}
+
     void setLogger(Logger* logger) {
         this->logger = logger;
     }
@@ -32,12 +34,11 @@ public:
 };
 
 int main() {
-    ConsoleLogger consoleLogger;
-    FileLogger fileLogger;
-    Bank bank;
-    bank.setLogger(&consoleLogger);
+    ConsoleLogger* consoleLogger;
+    FileLogger* fileLogger;
+    Bank bank{ consoleLogger };
     bank.makeTransfer(1000, 2000, 49.95);
-    bank.setLogger(&fileLogger);
+    bank.setLogger(fileLogger);
     bank.makeTransfer(2000, 4000, 20.00);
 
     return 0;
