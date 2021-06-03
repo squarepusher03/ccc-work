@@ -12,6 +12,12 @@ T mean(const T* values, size_t length) {
 
 int main()
 {
-    const double x[] { 1.2, 8.9, 6.5, 4.2 };
-    std::cout << mean(x, (sizeof(x) / sizeof(double))) << std::endl;
+    const double aDouble[] { 1.0, 2.0, 3.0, 4.0 };
+    std::cout << "double: " << mean(aDouble, 4) << std::endl;
+
+    const float aFloat[] { 1.0f, 2.0f, 3.0f, 4.0f };
+    std::cout << "float: " << mean(aFloat, 4) << std::endl;
+
+    const size_t aSizeT[]{ 1, 2, 3, 4 };
+    std::cout << "size_t: " << mean(aSizeT, 4) << std::endl;
 }
