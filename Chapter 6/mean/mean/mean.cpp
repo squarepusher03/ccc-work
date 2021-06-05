@@ -1,7 +1,15 @@
 #include <iostream>
-#include <stdexcept>
+#include <cstring>
+#include <type_traits>
 
 template <typename T>
+concept Averageable =
+    std::is_default_constructible<T>::value && requires (T a, T b) {
+        { a + b } -> std::same_as<T>;
+        { a / b } -> std::same_as<T>;
+    };
+
+template <Averageable T>
 T mean(const T* values, size_t length) {
     T result{};
     for (size_t i{}; i < length; i++) {
@@ -18,6 +26,6 @@ int main()
     const float aFloat[] { 1.0f, 2.0f, 3.0f, 4.0f };
     std::cout << "float: " << mean(aFloat, 4) << std::endl;
 
-    const size_t aSizeT[]{ 1, 2, 3, 4 };
+    const size_t aSizeT[] { 1, 2, 3, 4 };
     std::cout << "size_t: " << mean(aSizeT, 4) << std::endl;
 }
