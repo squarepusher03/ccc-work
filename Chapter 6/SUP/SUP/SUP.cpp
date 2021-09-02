@@ -41,6 +41,11 @@ void consumer(SUP<Tracer> consumerPtr) {
     std::cout << "(cons) consumerPtr: 0x" << consumerPtr.get() << std::endl;
 }
 
+template <typename T, typename... Arguments>
+SUP<T> makeSUP(Arguments... arguments) {
+    return SUP<T>{ new T{ arguments } };
+}
+
 int main()
 {
     auto ptrA = SUP<Tracer>( new Tracer{ "ptrA" } );
