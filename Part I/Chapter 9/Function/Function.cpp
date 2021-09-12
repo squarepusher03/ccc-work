@@ -46,7 +46,7 @@ void const static_func() {
 auto text = "Sailor went to sea to see what he could see.";
 
 int main() {
-	function<void()> func1 { [] { cout << "A lambda.\n"; } };
+	function<void()> func1 { []{ cout << "A lambda.\n"; } };
 	func1();
 	func1 = static_func;
 	func1();

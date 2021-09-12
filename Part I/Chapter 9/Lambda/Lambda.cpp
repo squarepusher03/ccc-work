@@ -29,7 +29,7 @@ int main() {
 	char key{'a'};
 	size_t tally{};
 	
-	auto a_search = [&, key](const char* str) mutable {
+	auto a_search = [&, key](const char* str) {
 		size_t index{}, result{};
 		
 		while (str[index]) {
