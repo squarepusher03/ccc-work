@@ -16,10 +16,6 @@ struct BrakeCommand {
 	double time_to_collision;
 };
 
-struct ServiceBus {
-	void publish(const BrakeCommand&);
-};
-
 using SpeedUpdateCallback = function<void (const SpeedUpdate&)>;
 using CarDetectedCallback = function<void (const CarDetected&)>;
 
@@ -55,7 +51,7 @@ class AutoBrake {
 	double speed;
 
 public:
-	AutoBrake(IServiceBus& bus) : collision_threshold{ 5 } {
+	AutoBrake(IServiceBus& bus) : speed{}, collision_threshold { 5 } {
 		bus.subscribe([this](const SpeedUpdate& update) { speed = update.velocity; });
 		bus.subscribe([this, &bus](const CarDetected& cd) {
 			const auto relative_velocity = speed - cd.velocity;
@@ -81,8 +77,43 @@ public:
 	}
 };
 
-TEST_CASE("intial car speed is 0") {
+TEST_CASE("AutoBrake") {
 	MockServiceBus bus{};
-	AutoBrake auto_break{ bus };
-	REQUIRE(auto_break.get_speed() == 0);
+	AutoBrake auto_brake{ bus };
+
+	SECTION("intial car speed is 0") {
+		REQUIRE(auto_brake.get_speed() == 0);
+	}
+
+	SECTION("collision threshold is five") {
+		REQUIRE(auto_brake.get_collision_threshold() == Approx(5L));
+	}
+
+	SECTION("throws when sensitivity less than one") {
+		REQUIRE_THROWS(auto_brake.set_collision_threshold(0.5L));
+	}
+
+	SECTION("saves speed after update") {
+		bus.speed_update_callback(SpeedUpdate{ 100L });
+		REQUIRE(100L == auto_brake.get_speed());
+		bus.speed_update_callback(SpeedUpdate{ 50L });
+		REQUIRE(50L == auto_brake.get_speed());
+		bus.speed_update_callback(SpeedUpdate{ 0L });
+		REQUIRE(0L == auto_brake.get_speed());
+	}
+
+	SECTION("no alert when not imminent") {
+		auto_brake.set_collision_threshold(2L);
+		bus.speed_update_callback(SpeedUpdate{ 100L });
+		bus.car_detected_callback(CarDetected{ 1000L, 50L });
+		REQUIRE(bus.commands_published == 0);
+	}
+
+	SECTION("alert when imminent") {
+		auto_brake.set_collision_threshold(10L);
+		bus.speed_update_callback(SpeedUpdate{ 100L });
+		bus.car_detected_callback(CarDetected{ 100L, 0L });
+		REQUIRE(bus.commands_published == 1);
+		REQUIRE(bus.last_command.time_to_collision == Approx(1));
+	}
 }
