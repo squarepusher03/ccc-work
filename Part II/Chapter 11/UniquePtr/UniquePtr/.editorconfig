@@ -1,0 +1,5 @@
+# Rules in this file were initially inferred by Visual Studio IntelliCode from the C:\Users\22ghornecker\source\repos\squarepusher03\ccc-work\Part II\Chapter 11\UniquePtr\UniquePtr codebase based on best match to current usage at 9/22/2021
+# You can modify the rules from these initially generated values to suit your own policies
+# You can learn more about editorconfig here: https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference
+[*.cs]
+
