@@ -35,7 +35,7 @@ TEST_CASE("SharedPtr can be used in copy") {
 		// b has it's own obj, making the total obj's 2.
 		auto b = make_shared<obj>();
 		REQUIRE(obj::x == 2);
-		// b has it's own obj, making the total obj's 2.
+		// b destroys it's obj to make room for a's, then shares ownership of a's obj.
 		b = a;
 		REQUIRE(obj::x == 1);
 	}
