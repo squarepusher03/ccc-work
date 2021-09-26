@@ -33,3 +33,17 @@ template <typename T1, typename T2>
 bool operator!=(const Allocator<T1>&, const Allocator<T2>&) {
     return false;
 }
+
+TEST_CASE("Allocator") {
+    auto message = "The door is shut.";
+    Allocator<obj> alloc;
+    {
+        auto a = allocate_shared<obj>(alloc, message);
+        
+        REQUIRE(a->message == message);
+        REQUIRE(n_allocated == 1);
+        REQUIRE(n_deallocated == 0);
+    }
+    REQUIRE(n_allocated == 1);
+    REQUIRE(n_deallocated == 1);
+}
