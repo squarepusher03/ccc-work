@@ -2,6 +2,16 @@
 #include <new>
 #include "../../../lib/catch.hpp"
 
+struct obj {
+    const char* message;
+    static int x;
+
+    obj(const char* message = "") : message{ message } { x++; }
+    ~obj() { x--; }
+};
+
+int obj::x{};
+
 static size_t n_allocated, n_deallocated;
 
 template <typename T>
@@ -18,7 +28,7 @@ struct Allocator {
         return static_cast<T*>(p);
     }
 
-    void deallocate(T*, size_t n) {
+    void deallocate(T* p, size_t n) {
         operator delete(p);
         ++n_deallocated;
     }
@@ -38,7 +48,7 @@ TEST_CASE("Allocator") {
     auto message = "The door is shut.";
     Allocator<obj> alloc;
     {
-        auto a = allocate_shared<obj>(alloc, message);
+        auto a = std::allocate_shared<obj>(alloc, message);
         
         REQUIRE(a->message == message);
         REQUIRE(n_allocated == 1);
