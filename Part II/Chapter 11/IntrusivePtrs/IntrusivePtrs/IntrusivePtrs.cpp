@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
-#include "../../../lib/catch.hpp"
-#include "../../../lib/intrusive_ptr.hpp"
+#include "catch.hpp"
+#include "intrusive_ptr.hpp"
 
 struct obj {
 	const char* message;
