@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include <iostream>
 #include <memory>
-#include "../../lib/catch.hpp"
+#include "catch.hpp"
 #pragma warning( disable : 4996 )
 using namespace std;
 
