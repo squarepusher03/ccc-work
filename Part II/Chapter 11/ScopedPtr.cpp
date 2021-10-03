@@ -1,8 +1,8 @@
 #define CATCH_CONFIG_MAIN
 #include <iostream>
-#include "../lib/catch.hpp"
-#include "../lib/scoped_ptr.hpp"
-#include "../lib/scoped_array.hpp"
+#include "catch.hpp"
+#include "scoped_ptr.hpp"
+#include "scoped_array.hpp"
 using namespace std;
 
 struct ptr {
