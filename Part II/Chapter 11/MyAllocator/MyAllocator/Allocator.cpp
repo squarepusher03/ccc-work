@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include <new>
-#include "../../../lib/catch.hpp"
+#include "catch.hpp"
 
 struct obj {
     const char* message;
