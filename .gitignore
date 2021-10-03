@@ -234,4 +234,4 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
-/Part II/lib
+./Part II/lib/*
