@@ -2,6 +2,7 @@
 #include <catch.hpp>
 #include <array>
 #include <vector>
+#include <utility>
 using namespace std;
 
 TEST_CASE("vector supports default construction") {
@@ -49,4 +50,44 @@ TEST_CASE("vector insert places new elements") {
     zeros.insert(third_element, 10);
     REQUIRE(zeros[2] == 10);
     REQUIRE(zeros.size() == 4);
+}
+
+TEST_CASE("vector push_back places new elements") {
+    vector<int> zeros(3, 0);
+    zeros.push_back(10);
+    REQUIRE(zeros[3] == 10);
+}
+
+TEST_CASE("vector emplace methods forward arguments") {
+    vector<pair<int, int>> factors;
+    factors.emplace_back(2, 30);
+    factors.emplace_back(3, 20);
+    factors.emplace_back(4, 15);
+    factors.emplace(factors.begin(), 1, 60);
+    REQUIRE(factors[0].first == 1);
+    REQUIRE(factors[0].second == 60);
+}
+
+TEST_CASE("vector exposes size management methods") {
+    vector<array<uint8_t, 1024>> kb_store;
+
+    REQUIRE(kb_store.max_size() > 0);
+    REQUIRE(kb_store.empty());
+
+    size_t elements{ 1024 };
+    kb_store.reserve(elements);
+    REQUIRE(kb_store.empty());
+    REQUIRE(kb_store.capacity() == elements);
+
+    kb_store.emplace_back();
+    kb_store.emplace_back();
+    kb_store.emplace_back();
+    REQUIRE(kb_store.size() == 3);
+
+    kb_store.shrink_to_fit();
+    REQUIRE(kb_store.capacity() >= 3);
+
+    kb_store.clear();
+    REQUIRE(kb_store.empty());
+    REQUIRE(kb_store.capacity() >= 3);
 }
