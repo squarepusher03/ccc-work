@@ -1,5 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
+#include <unordered_set>
+#include <functional>
 #include <array>
 #include <set>
 using namespace std;
@@ -81,5 +83,86 @@ TEST_CASE("set allows insertion") {
     SECTION("with emplace_hint") {
         fib.emplace_hint(fib.end(), 8);
         REQUIRE(fib.find(8) != fib.end());
+    }
+}
+
+TEST_CASE("set allows removal") {
+    set<int> fib{ 1, 1, 2, 3, 5 };
+    
+    SECTION("with erase") {
+        fib.erase(3);
+        REQUIRE(fib.find(3) == fib.end());
+    }
+
+    SECTION("with clear") {
+        fib.clear();
+        REQUIRE(fib.empty());
+    }
+}
+
+TEST_CASE("multiset handles non-unique elements") {
+    multiset<int> fib{ 1, 1, 2, 3, 5 };
+
+    SECTION("as reflected by size") {
+        REQUIRE(fib.size() == 5);
+    }
+
+    SECTION("and count returns values greater than 1") {
+        REQUIRE(fib.count(1) == 2);
+    }
+
+    SECTION("and equal range returns non-trivial ranges") {
+        auto [begin, end] = fib.equal_range(1);
+        REQUIRE(*begin == 1);
+        ++begin;
+        REQUIRE(*begin == 1);
+        ++begin;
+        REQUIRE(begin == end);
+    }
+}
+
+TEST_CASE("hash<long> returns") {
+    hash<long> hasher;
+    auto hash_code_42 = hasher(42);
+
+    SECTION("equal hash codes for equal keys") {
+        REQUIRE(hash_code_42 == hasher(42));
+    }
+
+    SECTION("unequal hash codes for unequal keys") {
+        REQUIRE_FALSE(hash_code_42 == hasher(43));
+    }
+}
+
+TEST_CASE("equal_to<long> returns") {
+    equal_to<long> long_equal_to;
+
+    SECTION("true when arguments equal") {
+        REQUIRE(long_equal_to(42, 42));
+    }
+
+    SECTION("false when arguments unequal") {
+        REQUIRE_FALSE(long_equal_to(42, 43));
+    }
+}
+
+TEST_CASE("unordered_set") {
+    unordered_set<unsigned long> sheep(100);
+
+    SECTION("allows bucket count specification on construction") {
+        REQUIRE(sheep.bucket_count() >= 100);
+        REQUIRE(sheep.bucket_count() < sheep.max_bucket_count());
+        REQUIRE(sheep.max_load_factor() == Approx(1.0));
+    }
+
+    SECTION("allows us to reserve space for elements") {
+        sheep.reserve(100'000);
+        sheep.insert(0);
+        REQUIRE(sheep.load_factor() <= 0.00001);
+
+        while (sheep.size() < 100'000) {
+            sheep.insert(sheep.size());
+        }
+        REQUIRE(sheep.load_factor() <= 1.0);
     }
 }
