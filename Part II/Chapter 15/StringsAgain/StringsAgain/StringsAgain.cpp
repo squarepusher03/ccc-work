@@ -1,6 +1,8 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
+#include <boost/algorithm/string/finder.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/classification.hpp>
 #include <string_view>
 #include <string>
 using namespace boost::algorithm;
@@ -340,4 +342,26 @@ TEST_CASE("boost::algorithm") {
 TEST_CASE("boost::algorithm::all evaluates a predicate for all elements") {
     std::string word("juju");
     REQUIRE(all(word, [](auto c) { return c == 'j' || c == 'u'; }));
+}
+
+// 10/18/21
+TEST_CASE("boost::algorithm::is_alnum") {
+    const auto classifier = is_alnum();
+    SECTION("evaluates alphanumeric characters") {
+        REQUIRE(classifier('a'));
+        REQUIRE_FALSE(classifier('('));
+    }
+
+    SECTION("works with all") {
+        REQUIRE(all("nostarch", classifier));
+        REQUIRE_FALSE(all("@nostarch", classifier));
+    }
+}
+
+TEST_CASE("boost::algorithm::nth_finder finds the nth occurrence") {
+    const auto finder = nth_finder("na", 1);
+    std::string name("Carl Brutananadilewski"); // ???
+    const auto result = finder(name.begin(), name.end());
+    REQUIRE(result.begin() == name.begin() + 12); // Brutana(n)adilewski
+    REQUIRE(result.end() == name.begin() + 14); // Brutanana(d)ilewski
 }
