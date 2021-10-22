@@ -66,15 +66,34 @@ TEST_CASE("for_each_n") {
 
 TEST_CASE("find find_if find_if_not") {
     vector<string> words{ "fiffer", "feffer", "feff" };
+    // find whatever matches
     const auto find_result = find(words.cbegin(), words.cend(), "feff");
     REQUIRE(*find_result == words.back());
 
     const auto defends_digital_privacy = [](const auto& word) {
         return string::npos != word.find("eff");
     };
+    // finds first that's true
     const auto find_if_result = find_if(words.cbegin(), words.cend(), defends_digital_privacy);
     REQUIRE(*find_if_result == "feffer");
-
+    
+    // finds first that's false
     const auto find_if_not_result = find_if_not(words.cbegin(), words.cend(), defends_digital_privacy);
     REQUIRE(*find_if_not_result == words.front());
+}
+
+TEST_CASE("find_end") {
+    vector<string> words1{ "Goat", "girl", "googoo", "goggles" };
+    vector<string> words2{ "girl", "googoo" };
+    const auto find_end_result1 = find_end(words1.cbegin(), words1.cend(),
+        words2.cbegin(), words2.cend());
+    REQUIRE(*find_end_result1 == words1[1]);
+
+    const auto has_length = [](const auto& word, const auto& len) {
+        return word.length() == len;
+    };
+    vector<size_t> sizes{ 4, 6 };
+    const auto find_end_result2 = find_end(words1.cbegin(), words1.cend(),
+        sizes.cbegin(), sizes.cend(), has_length);
+    REQUIRE(*find_end_result2 == words1[1]);
 }
