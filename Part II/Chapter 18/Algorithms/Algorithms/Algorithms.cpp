@@ -5,6 +5,8 @@
 #include <string>
 using namespace std;
 
+// ==== NON-MODIFYING SEQUENCE OPERATIONS ====
+
 // Checks if all of the half-opened range returns true
 TEST_CASE("all_of") {
     vector<string> words{ "Auntie", "Anne's", "alligator" };
@@ -181,3 +183,76 @@ TEST_CASE("equal") {
     const auto equal_results2 = equal(words1.cbegin(), words1.cend(), words2.cbegin());
     REQUIRE(equal_results2);
 }
+
+// 10/25/2021
+// the same as equal, except order of the elements does not matter
+TEST_CASE("is_permutation") {
+    vector<string> words1{ "moonlight", "mighty", "nice" };
+    vector<string> words2{ "nice", "moonlight", "mighty" };
+    const auto result = is_permutation(words1.cbegin(), words1.cend(), words2.cbegin());
+    
+    REQUIRE(result);
+}
+
+// returns iterator where sequence 2 begins in sequence 1, otherwise, an ipt_begin2 iterator.
+TEST_CASE("search") {
+    vector<string> words1{ "Nine", "new", "neckties", "and", "a", "nightshirt" };
+    vector<string> words2{ "and", "a", "nightshirt" };
+    const auto search_result1 = search(words1.cbegin(), words1.cend(),
+        words2.cbegin(), words2.cend());
+    REQUIRE(*search_result1 == "and"); // returns pointer to beginning of subsequence
+
+    vector<string> words3{ "and", "a", "nightpant" };
+    const auto search_result2 = search(words1.cbegin(), words1.cend(),
+        words3.cbegin(), words3.cend());
+    REQUIRE(search_result2 == words1.cend());
+}
+
+// returns iterator where subsequence is found n times consecutively, 
+TEST_CASE("search_n") {
+    vector<string> words{ "an", "orange", "owl", "owl", "owl", "today" };
+    const auto result = search_n(words.cbegin(), words.cend(), 3, "owl");
+    REQUIRE(result == words.cbegin() + 2);
+}
+
+// ==== MUTATING SEQUENCE OPERATIONS ====
+
+// copies sequence 2 into sequence 1
+// they cannot overlap, meaning what you are copying can not be the same as where you are copying to
+// unless the beginning 
+TEST_CASE("copy") {
+    vector<string> words1{ "and", "prosper" };
+    vector<string> words2{ "Live", "long" };
+    // back_inserter pushes the copied stuff to the back of words2
+    copy(words1.cbegin(), words1.cend(), back_inserter(words2));
+    REQUIRE(words2 == vector<string>{ "Live", "long", "and", "prosper" });
+}
+
+// does the same, except it copies n many words from sequence 1 to sequence 2
+TEST_CASE("copy_n") {
+    vector<string> words1{ "on", "the", "wind" };
+    vector<string> words2{ "I'm", "a", "leaf" };
+    copy_n(words1.cbegin(), words1.size(), back_inserter(words2));
+    REQUIRE(words2 == vector<string>{ "I'm", "a", "leaf", "on", "the", "wind" });
+}
+
+// swaps two sequences
+TEST_CASE("swap_ranges") {
+    vector<string> words1{ "The", "king", "is", "dead." };
+    vector<string> words2{ "Long", "live", "the", "king." };
+    swap_ranges(words1.begin(), words1.end(), words2.begin());
+    REQUIRE(words1 == vector<string>{ "Long", "live", "the", "king." });
+    REQUIRE(words2 == vector<string>{ "The", "king", "is", "dead." });
+}
+
+// modifies the elements of a sequence and writes them into another
+TEST_CASE("transform") {
+    vector<unsigned short> nums1{ 1, 2, 3, 4 };
+    vector<unsigned short> result1;
+    auto increment = [](size_t x) {
+        return ++x;
+    };
+    transform(nums1.begin(), nums1.end(), back_inserter(result1), increment);
+    REQUIRE(result1 == vector<unsigned short>)
+}
+// 10/25/2021
