@@ -1,8 +1,10 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
+#include <string_view>
 #include <algorithm>
 #include <vector>
 #include <string>
+#include <array>
 using namespace std;
 
 // ==== NON-MODIFYING SEQUENCE OPERATIONS ====
@@ -184,7 +186,7 @@ TEST_CASE("equal") {
     REQUIRE(equal_results2);
 }
 
-// 10/25/2021
+// 10/25/2021 start
 // the same as equal, except order of the elements does not matter
 TEST_CASE("is_permutation") {
     vector<string> words1{ "moonlight", "mighty", "nice" };
@@ -245,6 +247,8 @@ TEST_CASE("swap_ranges") {
     REQUIRE(words2 == vector<string>{ "The", "king", "is", "dead." });
 }
 
+// 10/25/2021 stop
+// 10/26/2021 start
 // modifies the elements of a sequence and writes them into another
 TEST_CASE("transform") {
     vector<unsigned short> nums1{ 1, 2, 3, 4 };
@@ -253,6 +257,57 @@ TEST_CASE("transform") {
         return ++x;
     };
     transform(nums1.begin(), nums1.end(), back_inserter(result1), increment);
-    REQUIRE(result1 == vector<unsigned short>)
+    REQUIRE(result1 == vector<unsigned short>{ 2, 3, 4, 5 });
+
+    const array<unsigned short, 5> nums2{ 72, 69, 76, 76, 79 };
+    string result2;
+    auto toChar = [](size_t x) {
+        return static_cast<char>(x);
+    };
+
+    transform(nums2.begin(), nums2.end(), back_inserter(result2), toChar);
+    REQUIRE(result2 == "HELLO");
 }
-// 10/25/2021
+
+// searches the sequence to find the old_ref, then replaces it with the new_ref.
+TEST_CASE("replace") {
+    using namespace std::literals;
+    vector<string> words1{ "There", "is", "no", "try" };
+    replace(words1.begin(), words1.end(), "try"sv, "spoon"sv);
+    REQUIRE(words1 == vector<string>{ "There", "is", "no", "spoon" });
+
+    const vector<string> words2{ "There", "is", "no", "spoon" };
+    vector<string> words3{ "There", "is", "no", "spoon" };
+    auto has_two_os = [](const auto& x) {
+        return count(x.begin(), x.end(), 'o') == 2;
+    };
+    replace_copy_if(words2.begin(), words2.end(), words3.begin(), has_two_os, "try"sv);
+    REQUIRE(words3 == vector<string>{ "There", "is", "no", "try" });
+}
+
+// fills the sequence with a value
+TEST_CASE("fill") {
+    vector<string> answer1(6);
+    fill(answer1.begin(), answer1.end(), "police");
+    REQUIRE(answer1 == vector<string>{ "police", "police", "police", "police", "police", "police" });
+}
+
+// removes the items in the sequence the evaluated to true given the pred
+// returns iterator to the element right after the end of the modified sequence
+// used with .erase() in the erase-remove idiom
+TEST_CASE("remove") {
+    auto is_vowel = [](char x) {
+        const static string vowels{ "aeiouAEIOU" };
+        return vowels.find(x) != string::npos;
+    };
+    string pilgrim = "Among the things Billy Pilgrim could not change "
+        "were the past, the present, and the future.";
+    const auto new_end = remove_if(pilgrim.begin(), pilgrim.end(), is_vowel);
+
+    REQUIRE(pilgrim == "mng th thngs Blly Plgrm cld nt chng wr th pst, th prsnt, nd th ftr."
+        "present, and the future."); // doesn't remove any chars that exceed the length of 
+                                     // the modified string
+
+    pilgrim.erase(new_end, pilgrim.end()); // gets rid of the garbage left over
+    REQUIRE(pilgrim == "mng th thngs Blly Plgrm cld nt chng wr th pst, th prsnt, nd th ftr.");
+}
