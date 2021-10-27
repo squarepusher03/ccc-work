@@ -2,9 +2,11 @@
 #include <catch.hpp>
 #include <string_view>
 #include <algorithm>
+#include <random>
 #include <vector>
 #include <string>
 #include <array>
+#include <map>
 using namespace std;
 
 // ==== NON-MODIFYING SEQUENCE OPERATIONS ====
@@ -311,3 +313,96 @@ TEST_CASE("remove") {
     pilgrim.erase(new_end, pilgrim.end()); // gets rid of the garbage left over
     REQUIRE(pilgrim == "mng th thngs Blly Plgrm cld nt chng wr th pst, th prsnt, nd th ftr.");
 }
+// 10/26/2021 stop
+// 10/27/2021 start
+
+// removes every element that isn't unique in a sequence
+TEST_CASE("unique") {
+    string without_walls = "Wallless";
+    const auto new_end = unique(without_walls.begin(), without_walls.end());
+    without_walls.erase(new_end, without_walls.end()); // new_end leaves off where the new sequence ends
+    // leaves garbage in the string like .remove(), use erase-remove idiom here too
+
+    REQUIRE(without_walls == "Wales");
+}
+
+// reverses the sequence
+TEST_CASE("reverse") {
+    string dog = "dog";
+    reverse(dog.begin(), dog.end());
+    REQUIRE(dog == "god");
+}
+
+// shuffles the sequence into a random permutation
+// looks interesting but the book does a poor job of explaining it
+TEST_CASE("shuffle") {
+    const string population = "ABCD";
+    const size_t n_samples{ 1'000'000 };
+    mt19937_64 urbg;
+    map<string, size_t> samples;
+
+    cout << fixed << setprecision(1);
+    for (size_t i{}; i < n_samples; i++) {
+        string result{ population };
+        shuffle(result.begin(), result.end(), urbg);
+        samples[result]++;
+    }
+
+    for (const auto [sample, n] : samples) {
+        const auto percentage = 100 * static_cast<double>(n) / static_cast<double>(n_samples);
+        cout << percentage << " '" << sample << "'\n";
+    }
+}
+
+// ==== SORTING AND RELATED OPERATIONS ====
+
+// sorts a sequence unstably
+// doesn't preserve original relative order
+TEST_CASE("sort") {
+    string goat_grass{ "spoilage" };
+    sort(goat_grass.begin(), goat_grass.end());
+    REQUIRE(goat_grass == "aegilops");
+}
+
+// sorts a sequence stably
+// does preserve original relative order
+enum class CharCategory {
+    Ascender,
+    Normal,
+    Descender
+};
+
+CharCategory categorize(char x) {
+    switch (x) {
+    case 'g':
+    case 'j':
+    case 'p':
+    case 'q':
+    case 'y':
+        return CharCategory::Descender; // if it's a descender
+    case 'b':
+    case 'd':
+    case 'f':
+    case 'h':
+    case 'k':
+    case 'l':
+    case 't':
+        return CharCategory::Ascender; //  if it's an ascender
+    }
+    return CharCategory::Normal; // if neither
+}
+
+bool ascension_compare(char x, char y) {
+    return categorize(x) < categorize(y);
+}
+
+TEST_CASE("stable_sort") { 
+    string word{ "outgrin" }; // [ou]n [t]a [g]d [rin]n
+    stable_sort(word.begin(), word.end(), ascension_compare);
+    REQUIRE(word == "touring"); // [t]a [ourin]n [g]d
+    // group is in different places, but maintain order within their groups
+}
+
+// 10/27/2021 stop
+// checks if the sequence is sorted
+TEST_CASE("is_sorted")
