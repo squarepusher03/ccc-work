@@ -404,5 +404,47 @@ TEST_CASE("stable_sort") {
 }
 
 // 10/27/2021 stop
+// 10/29/2021 start
 // checks if the sequence is sorted
-TEST_CASE("is_sorted")
+TEST_CASE("is_sorted") {
+    string word1{ "billowy" };
+    REQUIRE(is_sorted(word1.begin(), word1.end()));
+
+    string word2{ "floppy" };
+    REQUIRE(word2.end() == is_sorted_until(word2.begin(), word2.end(), ascension_compare));
+}
+
+// sorts the sequence so that rnd_nth is in the same place when the sequence is sorted.
+TEST_CASE("nth_element") {
+    vector<int> numbers{ 1, 9, 2, 8, 3, 7, 4, 6, 5 };
+    nth_element(numbers.begin(), numbers.begin() + 5, numbers.end());
+    auto less_than_6th = [&elem = numbers[5]](int x) {
+        return x < elem;
+    };
+    REQUIRE(all_of(numbers.begin(), numbers.begin() + 5, less_than_6th));
+}
+
+// ==== BINARY SEARCH ====
+
+// returns an iterator to the partition where value would be if the whole listed is sorted
+// nums before result < result < nums after result
+TEST_CASE("lower_bound") {
+    vector<int> numbers{ 2, 4, 5, 6, 6, 9 };
+    const auto result = lower_bound(numbers.begin(), numbers.end(), 5);
+    REQUIRE(result == numbers.begin() + 2);
+}
+
+// returns an iterator to the first element in the sequence larger than value
+TEST_CASE("upper_bound") {
+    vector<int> numbers{ 2, 4, 5, 6, 6, 9 };
+    const auto result = upper_bound(numbers.begin(), numbers.end(), 5);
+    REQUIRE(result == numbers.begin() + 3);
+}
+
+// returns a range containing values that all equal val
+TEST_CASE("equal_range") {
+    vector<int> numbers{ 2, 4, 5, 6, 6, 9 };
+    const auto [rbeg, rend] = equal_range(numbers.begin(), numbers.end(), 6);
+    REQUIRE(rbeg == numbers.end() - 3); // { 2, 4, 5, [6], 6, 9 }
+    REQUIRE(rend == numbers.end() - 1); // { 2, 4, 5, 6, 6, [9] }, the range is non inclusive.
+}
