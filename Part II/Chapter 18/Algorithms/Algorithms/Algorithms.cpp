@@ -448,3 +448,102 @@ TEST_CASE("equal_range") {
     REQUIRE(rbeg == numbers.end() - 3); // { 2, 4, 5, [6], 6, 9 }
     REQUIRE(rend == numbers.end() - 1); // { 2, 4, 5, 6, 6, [9] }, the range is non inclusive.
 }
+// 10/29/2021 stop
+// 11/1/2021 start
+
+// returns boolean based on whether val is in the sequence or not
+TEST_CASE("binary_search") {
+    vector<int> nums{ 2, 3, 4, 5, 6, 6, 9 };
+    REQUIRE(binary_search(nums.cbegin(), nums.cend(), 6));
+    REQUIRE_FALSE(binary_search(nums.cbegin(), nums.cend(), 7));
+}
+
+// ==== PARTITIONING ALGORITHMS ====
+
+// partitioned meaning having elements separated into groups
+// first element of second group is the partition point
+
+const auto is_odd = [](auto x) { return x % 2 == 1; };
+
+// determines whether a sequence is partitioned
+TEST_CASE("is_partitioned") {
+    vector<int> nums1{ 9, 5, 9, 6, 4, 2 }; // { [9, 5, 9,] [6, 4, 2] } [odd, even]
+    REQUIRE(is_partitioned(nums1.cbegin(), nums1.cend(), is_odd));
+
+    vector<int> nums2{ 9, 4, 9, 6, 4, 2 }; // no separation of characteristics at all in regards to is_odd
+    REQUIRE_FALSE(is_partitioned(nums2.cbegin(), nums2.cend(), is_odd));
+}
+
+// partitions a sequence in regards to the predicate
+TEST_CASE("partition") {
+    vector<int> nums{ 1, 2, 3, 4, 5 };
+    const auto partition_point = partition(nums.begin(), nums.end(), is_odd);
+    REQUIRE(is_partitioned(nums.cbegin(), nums.cend(), is_odd));
+    REQUIRE(partition_point == nums.begin() + 3); // { 1, 3, 5, [2], 4 }, it's the 4th element from the start
+    // the ordering in the groups is not definite, so I don't know it for sure, but we do know the partition
+    // points location.
+}
+
+// partitions a sequence and sends all the values that equal to true or false to 2 different OutputIterators
+TEST_CASE("partition_copy") {
+    vector<int> nums{ 1, 2, 3, 4, 5 }, odd, even;
+    partition_copy(nums.begin(), nums.end(), back_inserter(odd), back_inserter(even), is_odd);
+    REQUIRE(all_of(odd.cbegin(), odd.cend(), is_odd));
+    REQUIRE(none_of(even.cbegin(), even.cend(), is_odd));
+}
+
+// partitions a sequence stably
+// it preserves order within the groups it partitions
+TEST_CASE("stable_partition") {
+    vector<int> numbers{ 1, 2, 3, 4, 5 };
+    stable_partition(numbers.begin(), numbers.end(), is_odd);
+    REQUIRE(numbers == vector<int>{ 1, 3, 5, 2, 4 });
+}
+
+// ==== MERGING ALGORITHMS ====
+
+// they merge two sorted target ranges
+
+// merges two sorted sequences, output is sorted too
+TEST_CASE("merge") {
+    vector<int> nums{ 1, 4, 5 }, nums2{ 2, 3, 3, 6 }, result;
+    merge(nums.begin(), nums.end(), nums2.begin(), nums2.end(), back_inserter(result));
+    REQUIRE(result == vector<int>{ 1, 2, 3, 3, 4, 5, 6 });
+}
+
+// ==== EXTREME-VALUE ALGORITHMS ====
+
+// min-max operations
+
+const auto length_compare = [](const auto& x1, const auto& x2) { return x1.length() < x2.length(); };
+
+// determine sequences extrema
+TEST_CASE("max and min") {
+    string undisc = "undiscriminativeness", vermin = "vermin";
+    REQUIRE(min(undisc, vermin, length_compare) == "vermin");
+
+    string maxim = "maxim", ultra = "ultramaximal";
+    REQUIRE(max(maxim, ultra, length_compare) == "ultramaximal");
+    
+    string mini = "minimaxes", maxi = "maximin";
+    const auto result = minmax(mini, maxi, length_compare);
+    REQUIRE(result.first == maxi); // first == minimum length
+    REQUIRE(result.second == mini); // second == maximum length
+}
+
+// returns an iterator to the minimum/maximum in a sequence
+// returns a pair if minmax_element, first == max, second == min
+TEST_CASE("min and max element") {
+    vector<string> words{ "civic", "deed", "kayak", "malayalam" };
+
+    REQUIRE(*min_element(words.begin(), words.end(), length_compare) == "deed");
+    REQUIRE(*max_element(words.begin(), words.end(), length_compare) == "malayalam");
+
+    const auto result = minmax_element(words.begin(), words.end(), length_compare);
+    REQUIRE(*result.first == "deed");
+    REQUIRE(*result.second == "malayalam");
+}
+
+// 11/1/2021 stop
+
+//iota
