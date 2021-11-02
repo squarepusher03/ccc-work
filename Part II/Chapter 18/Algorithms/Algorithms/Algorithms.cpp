@@ -2,6 +2,7 @@
 #include <catch.hpp>
 #include <string_view>
 #include <algorithm>
+#include <numeric>
 #include <random>
 #include <vector>
 #include <string>
@@ -545,5 +546,10 @@ TEST_CASE("min and max element") {
 }
 
 // 11/1/2021 stop
-
-//iota
+// 11/2/2021 start
+// fills a sequence with incremental values
+TEST_CASE("iota") {
+    array<int, 3> easy;
+    iota(easy.begin(), easy.end(), 1);
+    REQUIRE(easy == array<int, 3>{ 1, 2, 3 });
+}
