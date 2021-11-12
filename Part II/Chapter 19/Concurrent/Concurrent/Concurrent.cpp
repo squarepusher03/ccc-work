@@ -61,11 +61,12 @@ set<T> factorize(T x) {
     return result;
 }
 
-string factor_task(unsigned long x) {
+string factor_task(unsigned long long x) {
     chrono::nanoseconds elapsed_ns;
     set<unsigned long long> factors;
     {
         Stopwatch stopwatch{ elapsed_ns };
         factors = factorize(x);
     }
+    const auto elapsed_ms = chrono::duration_cast<chrono::milliseconds>(elapsed_ns).count();
 }

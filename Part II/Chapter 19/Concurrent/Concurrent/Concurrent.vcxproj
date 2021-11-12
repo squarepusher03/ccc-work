@@ -141,7 +141,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Chapter 12\Stopwatch\Stopwatch\Stopwatch.cpp" />
     <ClCompile Include="Concurrent.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Stopwatch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
