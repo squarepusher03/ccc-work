@@ -1,19 +1,14 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-//using namespace std;
-//using namespace literals::chrono_literals;
+#include "Stopwatch.h"
+using namespace std;
+using namespace literals::chrono_literals;
 
-class Stopwatch {
-    std::chrono::nanoseconds& result;
-    const std::chrono::time_point<std::chrono::high_resolution_clock> start;
-
-public:
-    Stopwatch(std::chrono::nanoseconds& result) : result{ result }, start{ std::chrono::high_resolution_clock::now() } {}
-    ~Stopwatch() {
-        result = std::chrono::high_resolution_clock::now() - start;
-    }
-};
+Stopwatch::Stopwatch(chrono::nanoseconds& result) : result{ result }, start{ chrono::high_resolution_clock::now() } {}
+Stopwatch::~Stopwatch() {
+    result = chrono::high_resolution_clock::now() - start;
+}
 
 //int main() {
 //    const size_t n = 1'000'000;
